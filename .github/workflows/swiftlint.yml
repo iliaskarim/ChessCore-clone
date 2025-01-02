@@ -6,8 +6,9 @@ on: pull_request:
     - '**/*.swift'
 
 SwiftLint:
- runs-on: ubuntu-latest
- steps:
-   - uses: actions/checkout@v1
-   - name: GitHub Action for SwiftLint
-     uses: norio-nomura/action-swiftlint@master
+  runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
+  steps:
+    - uses: actions/checkout@v4
+    - uses: cirruslabs/swiftlint-action@v1
+      with:
+        version: latest
