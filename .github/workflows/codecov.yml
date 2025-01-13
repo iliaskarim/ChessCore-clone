@@ -9,4 +9,6 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v2
         - name: Run unit tests
-          run: swift test --enable-code-coverage
+          run: |
+            swift test --show-codecov-path
+            swift test --enable-code-coverage
