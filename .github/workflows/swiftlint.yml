@@ -6,11 +6,11 @@ on:
       - '.github/workflows/swiftlint.yml'
       - '.swiftlint.yml'
       - '**/*.swift'
+      
 jobs:
   SwiftLint:
-    runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: cirruslabs/swiftlint-action@v1
-        with:
-          version: latest
+      - uses: actions/checkout@v1
+      - name: GitHub Action for SwiftLint
+        uses: norio-nomura/action-swiftlint@3.2.1
