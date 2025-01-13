@@ -1,14 +1,16 @@
 name: SwiftLint
-on: pull_request:
-  paths:
-    - '.github/workflows/swiftlint.yml'
-    - '.swiftlint.yml'
-    - '**/*.swift'
 
-SwiftLint:
-  runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
-  steps:
-    - uses: actions/checkout@v4
-    - uses: cirruslabs/swiftlint-action@v1
-      with:
-        version: latest
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/swiftlint.yml'
+      - '.swiftlint.yml'
+      - '**/*.swift'
+jobs:
+  SwiftLint:
+    runs-on: ghcr.io/cirruslabs/macos-runner:sonoma
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cirruslabs/swiftlint-action@v1
+        with:
+          version: latest
