@@ -6,9 +6,19 @@ jobs:
     name: Unit-Tests
     runs-on: macos-13
     steps:
-        - name: Checkout repository
+        - name: Checkout code
           uses: actions/checkout@v2
+          
         - name: Run unit tests
           run: |
             swift test --show-codecov-path
             swift test --enable-code-coverage
+            xcrun llvm-cov show .build/debug/ChessCorePackageTests.xctest/Contents/MacOS/ChessCorePackageTests \
+              --instr-profile=.build/debug/codecov/default.profdata \
+              --output-dir=coverage_report
+
+        - name: Upload coverage report
+          uses: actions/upload-artifact@v3
+          with:
+            name: coverage-report
+            path: coverage_report
