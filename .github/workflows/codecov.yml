@@ -21,7 +21,7 @@ jobs:
           # Process the JSON data with jq to extract the relevant fields
           TABLE_CONTENT=$(jq -r '[.data[0].files[] 
             | select(.filename | test("Tests/") | not) 
-            | "| \(.filename | split("/") | last) | \(.coverage) |"] | join("\n")' "$COVERAGE_JSON")
+            | "| \(.filename | split("/") | last) | \((.summary.lines.percent * 10 | round) / 10) |"] | join("\n")' "$COVERAGE_JSON")
 
           # Prepare the markdown table
           MARKDOWN_TABLE="| Filename | Coverage |\n|----------|----------|\n$TABLE_CONTENT"
