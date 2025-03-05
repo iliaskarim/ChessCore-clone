@@ -26,8 +26,8 @@ jobs:
           # Prepare the markdown table
           MARKDOWN_TABLE="| Filename | Coverage |\n|----------|----------|\n$TABLE_CONTENT"
 
-          # Set output for later use in the comment step
-          echo "markdown_table=$MARKDOWN_TABLE" >> $GITHUB_ENV
+          # Output the markdown table into a file so we can safely pass it to the comment
+          echo "$MARKDOWN_TABLE" > table.md
 
       - name: Create PR comment with coverage table
         uses: peter-evans/create-or-update-comment@v3
@@ -36,4 +36,4 @@ jobs:
           body: |
             ## Unit Test Coverage Report
 
-            ${{ env.markdown_table }}
+            $(cat table.md)
