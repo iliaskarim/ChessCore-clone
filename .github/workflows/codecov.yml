@@ -7,6 +7,11 @@ jobs:
     runs-on: macos-13
     steps:
         - name: Checkout repository
-          uses: actions/checkout@v2
+          uses: actions/checkout@v4
+          
         - name: Run unit tests
-          run: swift test --enable-code-coverage
+          run: |
+            swift test --enable-code-coverage
+            XCTEST_PATH="$(find . -name '*.xctest')"
+            set -- $(xcrun llvm-cov report ${XCTEST_PATH}/Contents/MacOS/*PackageTests -instr-profile .build/debug/codecov/default.profdata -ignore-filename-regex='.build/|Tests/' | tail -1)
+            echo "COVERAGE PERCENTAGE: $4" 
