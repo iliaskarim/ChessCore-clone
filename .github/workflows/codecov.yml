@@ -6,7 +6,8 @@ jobs:
     name: Unit-Tests
     runs-on: macos-13
     permissions:
-      issues: write  # Grant write access to issues (which includes PR comments)
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
