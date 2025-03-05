@@ -6,7 +6,6 @@ jobs:
     name: Unit-Tests
     runs-on: macos-13
     permissions:
-      issues: write
       pull-requests: write
 
     steps:
@@ -40,4 +39,4 @@ jobs:
           body: |
             ## Unit Test Coverage Report
 
-            $(cat table.md)
+            ${{ steps.test_results.outputs.table }}
