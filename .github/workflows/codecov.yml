@@ -5,8 +5,35 @@ jobs:
   tests:
     name: Unit-Tests
     runs-on: macos-13
+    permissions:
+      pull-requests: write
+
     steps:
-        - name: Checkout repository
-          uses: actions/checkout@v2
-        - name: Run unit tests
-          run: swift test --enable-code-coverage
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run unit tests
+        id: test_results
+        run: |
+          # Run the tests and generate coverage
+          swift test --enable-code-coverage
+          
+          # Get the path to the codecov output
+          COVERAGE_JSON=$(swift test --show-codecov-path)
+          
+          # Process the JSON data with jq to extract the relevant fields
+          TABLE_CONTENT=$(jq -r '[.data[0].files[] 
+            | select(.filename | test("Tests/") | not) 
+            | "| \(.filename | split("/") | last) | \((.summary.lines.percent * 10 | round) / 10)% (\(.summary.lines.covered) / \(.summary.lines.count)) |"] | join("\n")' "$COVERAGE_JSON")
+
+          # Prepare the markdown table
+          MARKDOWN_TABLE="| Filename | Coverage |\n|----------|----------|\n$TABLE_CONTENT"
+
+          # Output the markdown table into a file
+          PREFIX="## Unit Test Coverage Report\n\n"
+          echo -e "$PREFIX$MARKDOWN_TABLE" > table.md
+
+          # Create PR comment with coverage table
+          gh pr comment ${{ github.event.pull_request.number }} --body-file table.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
