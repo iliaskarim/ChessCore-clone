@@ -29,12 +29,12 @@ jobs:
           # Prepare the markdown table
           MARKDOWN_TABLE="| Filename | Coverage |\n|----------|----------|\n$TABLE_CONTENT"
 
-          # Output the markdown table into a file so we can safely pass it to the comment
-          echo "$MARKDOWN_TABLE" > table.md
-
+          # Output the markdown table as a step output
+          echo "table=$MARKDOWN_TABLE" >> $GITHUB_ENV
+    
       - name: Create PR comment with coverage table
         run: |
-          COMMENT_BODY="## Unit Test Coverage Report\n\n${{ env.table }}"
+          COMMENT_BODY=$(printf "## Unit Test Coverage Report\n\n%s" "${{ env.table }})
           gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
