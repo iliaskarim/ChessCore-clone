@@ -6,12 +6,34 @@ jobs:
     name: Unit-Tests
     runs-on: macos-13
     steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run unit tests
+        id: test_results
+        run: |
+          # Run the tests and generate coverage
+          swift test --enable-code-coverage
           
-        - name: Run unit tests
-          run: |
-            swift test --enable-code-coverage
-            XCTEST_PATH="$(find . -name '*.xctest')"
-            set -- $(xcrun llvm-cov report ${XCTEST_PATH}/Contents/MacOS/*PackageTests -instr-profile .build/debug/codecov/default.profdata -ignore-filename-regex='.build/|Tests/' | tail -1)
-            echo "COVERAGE PERCENTAGE: $4" 
+          # Get the path to the codecov output
+          COVERAGE_JSON=$(swift test --show-codecov-path)
+          
+          # Process the JSON data with jq to extract the relevant fields
+          TABLE_CONTENT=$(jq -r '[.data[0].files[] 
+            | select(.filename | test("Tests/") | not) 
+            | "| \(.filename | split("/") | last) | \(.coverage) |"] | join("\n")' "$COVERAGE_JSON")
+
+          # Prepare the markdown table
+          MARKDOWN_TABLE="| Filename | Coverage |\n|----------|----------|\n$TABLE_CONTENT"
+
+          # Set output for later use in the comment step
+          echo "markdown_table=$MARKDOWN_TABLE" >> $GITHUB_ENV
+
+      - name: Create PR comment with coverage table
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## Unit Test Coverage Report
+
+            ${{ env.markdown_table }}
