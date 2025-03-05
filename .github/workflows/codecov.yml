@@ -5,6 +5,9 @@ jobs:
   tests:
     name: Unit-Tests
     runs-on: macos-13
+    permissions:
+      issues: write  # Grant write access to issues (which includes PR comments)
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
