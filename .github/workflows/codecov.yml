@@ -33,10 +33,8 @@ jobs:
           echo "$MARKDOWN_TABLE" > table.md
 
       - name: Create PR comment with coverage table
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ## Unit Test Coverage Report
-
-            ${{ steps.test_results.outputs.table }}
+        run: |
+          COMMENT_BODY="## Unit Test Coverage Report\n\n${{ env.table }}"
+          gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT_BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
