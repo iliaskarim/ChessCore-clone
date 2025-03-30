@@ -1,4 +1,4 @@
-# Chess
+# ChessCore
 
 Chess Swift package
 
